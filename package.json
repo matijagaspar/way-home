@@ -1,10 +1,11 @@
 {
   "name": "way-home",
-  "version": "0.0.1",
-  "description": "WS Reverse proxy with strong authentication. Ideal for deploying with now",
-  "main": "index.js",
-  "repository": "git@bitbucket.org:matijagaspar/way-home.git",
-  "author": "<matija.gaspar@gmail.com>",
+  "version": "1.0.0",
+  "description": "WS Reverse proxy with strong authentication.",
+  "main": "dist/index.js",
+  "repository": "https://github.com/matijagaspar/way-home",
+  "homepage": "https://github.com/matijagaspar/way-home#README",
+  "author": "Matija Gaspar <matija.gaspar@gmail.com>",
   "license": "MIT",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -13,9 +14,10 @@
     "dev-server": "node tools/rundev.js server",
     "lint": "eslint ./src --fix",
     "build": "node tools/rundev.js build",
-    "run-server": "node dist/index.js server next",
+    "run-server": "node dist/index.js server",
     "run-client": "node dist/index.js client"
   },
+  "files":["dist/*"],
   "bin": {
     "way-home": "dist/index.js",
     "way-home-pretty-logs": "tools/way-home-pretty-logs.js"

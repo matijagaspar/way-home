@@ -15,9 +15,9 @@ Needs to run on a publicly accessible address. It handles all connections and ro
 ## Set up
 
 ### Prerequisites
-* A hosting server able to run node: aws, bare metal with open 433 (plain http is not advised) port.
+* A hosting server able to run node (ie: aws, gce, bare metal) with open 433 port(plain http is not advised, should be https).
 * A direct and wildcard domain pointing to the hosting server (proxy.mydomain.tld and *.proxy.mydomain.tld)
-* HTTPS proxy (nginx, ALB, ...)
+* HTTPS reverse proxy (nginx, ALB, ...)
 * HTTPS Certificate for wildcard and direct domain (ie: proxy.mydomain.tld and *.proxy.mydomain.tld)
 * Some sort of process/service manager on the hosting machine to keep the service running (ie: supervisor, pm2, systemd, ...)
 * Set up a google oauth in google console. Allowed callback should be: `https://[domain]/googleCallback`
@@ -121,11 +121,14 @@ Needs to run on a publicly accessible address. It handles all connections and ro
   "authorization_key": "" //automatically managed
 }
 ```
+## Development
+
+For development the main thing is you wil have to edit your hosts file to make it work in development. Pick some domain and point it to localhost, use that domain in config files. For development just use `isSsl: false`. To start the development use `yarn dev server` and `yarn dev client`. Can be run in the same command too: `yarn dev server client`. The dev env is set up in such a way that modification will trigger re-compile and restart. For faster restarts if you are only working on the websocket router you can skip nextjs by `yarn dev server --skip-next`
 
 ## Security considerations
-First and foremost, your server should use https, otherwise the communication between agent and server will be vulnerable to MIM. Whenever possible use `session` mode, using basic or open should be considered unsecure. To make everything work, there are some direct http request parsing, which although in most cases should be ok there might be some flaw that I have missed. Agent configuration contains a authentication key that is used to authenticate the agent with the server. It should be considered very sensitive, if "stolen" one could attempt to spoof an agent, but since only one agent with same id can be connected, they will be disconnecting eachother, should be easily noticable from logs.
+First and foremost, your server should use https, otherwise the communication between agent and server will be vulnerable to MIM. Whenever possible use `session` mode, using basic or open should be considered unsecure. To make everything work, there are some direct http request parsing, which although in most cases should be ok there might be some flaw that I have missed. Agent configuration contains a authentication key that is used to authenticate the agent with the server. It should be considered very sensitive, if "stolen" one could attempt to spoof an agent, but since only one agent with same id can be connected, they will be disconnecting eachother, should be easily noticable from logs. For basic auth, the password is stored on the client config in clear text. As mentioned before basic should be considered unsafe, but when I have some time I will update to store a hashed value.
 
 ### Disclamer
-This was a hobby project of mine, there might be some major flaws in it that I might have missed, use at your own risk. It obviusly comes with no warranty or anything of sorts. There are still some bits needing of cleaning.
+This was a hobby project of mine from few years ago, that I decided to make public. I have updated the majority of the libs but there is still cleanup to do. There might be some major flaws that I have failed to notices, use at your own risk. It obviusly comes with no warranty or anything of sorts. There are still some bits needing of cleaning.
 
 
