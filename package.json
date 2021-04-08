@@ -1,6 +1,6 @@
 {
   "name": "way-home",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "WS Reverse proxy with strong authentication.",
   "main": "dist/index.js",
   "repository": "https://github.com/matijagaspar/way-home",

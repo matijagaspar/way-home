@@ -1,6 +1,5 @@
 // import wsAgent from "./utils/ws_agent";
 import server from "./server";
-import mock from "./mock";
 import yargs from "yargs";
 import chalk from "chalk";
 import client from "./client";
@@ -35,7 +34,6 @@ log.debug(`Starting in ${process.env.NODE_ENV} mode`);
 let yargOpts = yargs
   .command("client", "start client")
   .command("server", "start server")
-  .command("mock", "start mock apps")
   .demandCommand()
   .help()
   // .strict(true)
@@ -119,6 +117,9 @@ if (yargOpts.argv._.includes("client")) {
   client();
 }
 
-if (yargOpts.argv._.includes("mock")) {
-  mock();
+if(process.env.NODE_ENV !== 'production'){
+  yargOpts.command("mock", "start mock apps")
+  if (yargOpts.argv._.includes("mock")) {
+    require('./mock').default()
+  }
 }
