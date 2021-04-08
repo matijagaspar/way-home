@@ -1,0 +1,53 @@
+# ignore packages/caches
+node_modules/
+testing/
+hot/
+release/
+dist/
+.next/
+src/controller_app/.next/
+temp/
+tmp/
+server_db.json
+agent_settings.json
+agent_settings_dev.json
+
+.vagrant
+
+# test report
+test-report.xml
+lint-report.xml
+
+# numerous always-ignore extensions
+*~
+*.diff
+*.patch
+*.err
+*.orig
+*.log
+*.bak
+*.rej
+*.swo
+*.swp
+*.vi
+*.zip
+*.tar
+*.tgz
+*.gz
+*.sass-cache
+
+# os or editor files and folders
+Thumbs.db
+.DS_Store
+.cache
+.project
+.settings
+.tmproj
+*.iml
+*.log
+*.tmproj
+*.idea
+*.sln
+
+# ansible
+*.retry

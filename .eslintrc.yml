@@ -1,0 +1,48 @@
+---
+root: true
+extends: 
+    - "standard"
+    - "standard-react"
+    - "standard-jsx"
+    - "plugin:jsx-control-statements/recommended"
+parser: "@babel/eslint-parser"
+plugins:
+    - jsx-control-statements
+
+settings:
+    import/resolver: webpack  # take all defaults
+
+env:
+    es6: true
+    node: true
+    browser: true
+
+parserOptions:
+    sourceType: module
+
+globals:
+    __DEV__: true
+    __CLIENT__: true
+    __REV__: true
+    ReactRenderer: true
+
+rules:
+    "no-console": "warn"
+    "no-duplicate-imports": "error"
+    "camelcase": "off"
+    "no-extra-parens": "error"
+    "no-unused-vars": "warn"
+    "react/prop-types": "off"
+    "promise/param-names": "off"
+    "jsx-control-statements/jsx-jcs-no-undef": "error"
+    "comma-dangle": 
+        - warn
+        - "always-multiline"
+
+    # plugin rules
+    # flowtype/define-flow-type: 2
+    # flowtype/use-flow-type: 2
+    # flowtype/boolean-style: 1
+    # flowtype/delimiter-dangle: [ 1, "always-multiline" ]
+    # flowtype/generic-spacing: [ 1, "never" ]
+    # flowtype/semi: [ 1, "never" ]

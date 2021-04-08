@@ -1,0 +1,6 @@
+/dist/*
+/lib/*
+/src/index.js
+/testing/node_modules/*
+/coverage/*
+src/controller_app/.next
