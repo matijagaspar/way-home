@@ -1,4 +1,5 @@
 import wsAgent from './utils/ws_agent'
+// TODO: replace request with got ormsth?
 import request from 'request'
 
 // import lowdb from 'lowdb'
