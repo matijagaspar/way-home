@@ -73,6 +73,7 @@ if (process.argv[2] === 'build') {
     // clean next files
     await fse.remove(path.resolve(distFolder, '.next'))
     await fse.remove(path.resolve(distFolder, 'public'))
+    await fse.remove(path.resolve(nextControllerAppDir, '.next'))
 
     // production build next
     await nextBuild(nextControllerAppDir)
