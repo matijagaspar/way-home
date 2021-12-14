@@ -51,6 +51,7 @@ db.get('authorization_key').value()
       agent.stop('Unauthorized, try authorize ')
 
       let authorized = false
+      /* .stream().pipe(split()).on('data').on('end') */
       request(`http://${controller_address}/authorize_agent?agent_name=${agent_name}`).on('data', d => {
         const message = JSON.parse(d.toString())
         if (message.type === 'pin') {
@@ -58,6 +59,7 @@ db.get('authorization_key').value()
         } else if (message.type === 'success') {
           db.set('authorization_key', message.code).write()
           authorized = message.code
+          logger.info(`${agent_name}: successfully authorized with ${controller_address}`)
         } else if (message.type === 'error') {
           logger.error(message.message)
         }

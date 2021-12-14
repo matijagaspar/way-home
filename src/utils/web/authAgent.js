@@ -1,6 +1,7 @@
 
 import express from 'express'
 import WebError from './WebError'
+import { getAppLogger } from './utils/logger'
 
 import server_persistence from '../server_persistence'
 const s_pin = require('secure-pin')
@@ -8,6 +9,7 @@ const auth_code_cs = new s_pin.CharSet()
 auth_code_cs.addLowerCaseAlpha().addUpperCaseAlpha().addNumeric().randomize()
 const web_app = express()
 const agent_verifications = {}
+const logger = getAppLogger('server', 'magenta')
 
 web_app.get('/verify_agent', (req, res, next) => {
   const { pin, agent_name } = req.query
@@ -31,7 +33,6 @@ web_app.get('/verify_agent', (req, res, next) => {
   const agent_verification = agent_verifications[agent_name]
 
   if (agent_verification && pin === agent_verification.pin) {
-    // res.end(`Agent ${ agent_name } verified`)
     res.locals.verified_agent = agent_name
     next()
 
@@ -49,7 +50,11 @@ web_app.get('/verify_agent', (req, res, next) => {
       agent_verification.success(pin)
     })
   } else {
-    // log details?
+    if (agent_verification && pin !== agent_verification.pin) {
+      logger.warn(`Invalid ${agent_name} agent verification, pin not matching`)
+    } else {
+      logger.warn(`Invalid ${agent_name} agent verification`)
+    }
     throw new WebError(400, 'Bad agent verification')
   }
 })
@@ -76,6 +81,7 @@ web_app.get('/authorize_agent', (req, res) => {
 
     fail: (message) => {
       delete agent_verifications[agent_name]
+      logger.warn(`${agent_name} failed to authorize: ${message}`)
       sendChunk({
         type: 'error',
         message,
@@ -85,6 +91,7 @@ web_app.get('/authorize_agent', (req, res) => {
     success: code => {
       delete agent_verifications[agent_name]
       clearTimeout(failTimeout)
+      logger.info(`${agent_name} successfuly authorized`)
       sendChunk({
         type: 'success',
         code,

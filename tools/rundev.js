@@ -17,7 +17,6 @@ let child
 let pp
 // todo take options to do this!
 const WEBPACK_CONF = require('../webpack.config.js')
-const { compilation } = require('webpack')
 
 const withDefineNodeEnv = (conf, mode) => {
   if (!conf.plugins) {
@@ -88,9 +87,9 @@ if (process.argv[2] === 'build') {
     const filesToCopy = [
       '.next/server',
       '.next/static/chunks',
-            `.next/static/${build_id}`,
-            'public/static',
-            ...require(path.join(nextControllerAppDir, '.next', 'required-server-files.json')).files,
+      `.next/static/${build_id}`,
+      'public/static',
+      ...require(path.join(nextControllerAppDir, '.next', 'required-server-files.json')).files,
 
     ]
     // copy next files
@@ -160,6 +159,7 @@ if (process.argv[2] === 'build') {
     await stopProcess('SIGINT')
 
     // console.log(stats.toString({version:true, colors:true}))
+    // eslint-disable-next-line no-unused-vars
     const [n, r, ...rest_argvs] = process.argv
 
     child = cp.fork('./tools/worker.js', rest_argvs, { shell: true, stdio: 'pipe', env: { FORCE_COLOR: true, ...process.env } })// , process.argv)// ,[], {execArgv: [[ '--debug' ]]})
