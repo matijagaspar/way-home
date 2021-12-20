@@ -1,7 +1,7 @@
 
 import express from 'express'
 import WebError from './WebError'
-import { getAppLogger } from './utils/logger'
+import { getAppLogger } from '../logger'
 
 import server_persistence from '../server_persistence'
 const s_pin = require('secure-pin')
