@@ -85,7 +85,7 @@ Needs to run on a publicly accessible address. It handles all connections and ro
   "controller_address": "myproxy.example.com", // address of the server 
   "isSsl": true, // server on ssl (it should)
   "permissions": { // general permissions for all apps defined in this agent
-    "mode": "session", //authentication mode can be session, basic, or open
+    "mode": "session", //authentication mode can be session, basic, open
     "groups": [ //which groups can access, can be specific users see demo_app1
       "admin",
       "myAgentName"
@@ -110,6 +110,7 @@ Needs to run on a publicly accessible address. It handles all connections and ro
       "remote_port": 3003,
       "name": "MySuperApp",
       "remote_host": "localhost",
+      //"visibility": {} //optional to override dashboard visibility, it has the same structure as permissions. mode can be: open (visible by all), hidden: (vissible by none), session, basic. if not defined it will use agent level permission
       "permissions": {
         "mode":"basic", // example of basic permission
         "users":{

@@ -33,16 +33,12 @@ export default function client () {
     throw new Error('No apps defined in the agent_settings.json')
   }
   const logger = getAppLogger(agent_name, 'blue')
-  /* const agent_name = 'agent1'
-
-db.get('authorization_key').value()
-    const controller_address = 'localhost:8080' */
 
   const agent = wsAgent({
     name: agent_name,
     controller_address,
     is_ssl: isSsl,
-    getQuery: () => ({ authorized: db.get('authorization_key').value() }),
+    getQuery: () => ({ authorized: process.env.WH_AUTH_KEY || db.get('authorization_key').value() }),
     logger,
     onControllerConnected: () => {
       agent.sendAgentInfo({ permissions, apps })

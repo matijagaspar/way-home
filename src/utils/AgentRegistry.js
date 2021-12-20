@@ -21,10 +21,12 @@ const permissionHandler = (permissions, logger) => {
   const db = server_persistence()
   const { mode } = permissions
   switch (mode) {
+    case 'hidden':
+      return () => false
     case 'open':
       return () => true
     case 'basic': {
-      return async (request_url, headers, _, res) => {
+      return async (request_url, headers, _) => {
         // check for basic auth header
         if (!headers.authorization || headers.authorization.indexOf('Basic ') === -1) {
           throw new RouteError('expected_basic')
@@ -131,8 +133,14 @@ export default class AgentRegistry {
         continue
       }
 
+      // do proper object deep merge
       app_config.isAuthorized = permissionHandler(app_config.permissions || agent_permissions, logger.child({ topic: `${agent_id}/${app_id}` }))
-
+      // ability to override app visibility, uses agent permissions first, than app override visiblity
+      if (app_config.visibility || agent_permissions) {
+        // do proper object deep merge
+        app_config.isVisible = permissionHandler(app_config.visibility || agent_permissions, logger.child({ topic: `${agent_id}/${app_id}` }))
+      }
+      // isVisible
       const staging_url = new URL(this.root_url)
       staging_url.host = app_id + '.' + this.root_domain
 
@@ -147,10 +155,14 @@ export default class AgentRegistry {
       return []
     }
     const authorizedApps = []
-    for (const { isAuthorized, ...app } of Object.values(this.apps)) {
+    for (const { isAuthorized, isVisible, ...app } of Object.values(this.apps)) {
       let isAppAuthorized = false
       try {
-        isAppAuthorized = await isAuthorized(request_url, headers, session)
+        if (isVisible) {
+          isAppAuthorized = await isVisible(request_url, headers, session)
+        } else {
+          isAppAuthorized = await isAuthorized(request_url, headers, session)
+        }
       } catch (e) {
         isAppAuthorized = false
       }
@@ -173,7 +185,7 @@ export default class AgentRegistry {
         // const agent = this.agents[app.agent]
 
         const { isAuthorized, ...root_app_def } = app
-        const authorized = await isAuthorized(request_url, headers, null, res)
+        const authorized = await isAuthorized(request_url, headers, null)
 
         logger.debug(`host match: ${host_match} is auth: ${authorized}`)
         if (!authorized) {
