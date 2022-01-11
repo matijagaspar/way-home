@@ -234,10 +234,10 @@ export default function wsRouter (user_opts = {}) {
     ws.on('message', wsDataHandler(agent_name))
 
     const pingInterval = setInterval(function ping () {
-      wss.clients.forEach(function each (ws) {
-        logger.debug(`ping ${ws.agent_name}`)
-        ws.ping(() => {})
-      })
+      // wss.clients.forEach(function each (ws) {
+      logger.debug(`ping ${ws.agent_name}`)
+      ws.ping(() => {})
+      // })
     }, router_opts.ping_interval)
 
     const TOInterval = setInterval(() => {
