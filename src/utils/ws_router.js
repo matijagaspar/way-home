@@ -37,7 +37,15 @@ export default function wsRouter (user_opts = {}) {
       const { port } = Packet.parseConnectPacket(recieved_data)
       const stream = agent.streams[port]
 
-      if (!stream || !stream.pendingData) throw new Error('no stream')
+      if (!stream || !stream.pendingData) {
+        handleClientClose(port)
+        logger.error(`No stream ${port} on data handler`)
+        return
+      }
+
+      // if (!stream ) {
+      //   throw new Error('no stream')
+      // }
 
       logger.topicLogger(agent_name, stream.app_id, port).debug('got connection approval')
 

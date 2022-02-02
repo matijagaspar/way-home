@@ -3,7 +3,7 @@ const pino = require('pino')
 let logger
 const defaultPinoOpts = {
   safe: true,
-  level: process.env.NODE_ENV !== 'production' ? 'debug' : 'info',
+  level: process.env.NODE_ENV !== 'production' ? 'debug' : process.env.WAY_HOME_LL ? process.env.WAY_HOME_LL : 'info',
   serializers: {
     req: pino.stdSerializers.req,
     res: pino.stdSerializers.res,
