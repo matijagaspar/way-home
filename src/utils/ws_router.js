@@ -170,7 +170,7 @@ export default function wsRouter (user_opts = {}) {
             agent.port = Packet.getNewPort(agent.streams)
             logger.topicLogger(route.agent, route.app_id, agent.port).debug('New http connection')
             socket.on('error', e => {
-              logger.topicLogger(route.agent, route.app_id, agent.port).trace(`failed to write to port socket ${e.message}`)
+              logger.topicLogger(route.agent, route.app_id, agent.port).error(`failed to write to port socket ${e.message}`)
             })
             const connectPacket = Packet.craftConnectPacket(agent.port, route.app_id, route)
             Packet.wsSend(agent.ws, connectPacket)
