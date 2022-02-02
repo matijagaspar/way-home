@@ -101,7 +101,11 @@ export default function wsRouter (user_opts = {}) {
         return
       }
       logger.topicLogger(agent_name, stream.app_id, port).trace('writing to http')
-      agent.streams[port].socket.write(data)
+      try {
+        agent.streams[port].socket.write(data)
+      } catch (e) {
+        logger.topicLogger(agent_name, stream.app_id, port).trace('failed to write to port socket')
+      }
     }
   }
 
