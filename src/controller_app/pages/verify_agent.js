@@ -28,8 +28,8 @@ const SuccessBox = styled.div`
     }
     svg {
         color: green;
-        height: ${({ theme }) => theme.typography.title.lineHeight};
-        width: ${({ theme }) => theme.typography.title.lineHeight};
+        height: 20px;
+        width: 20px;
         margin-right: ${({ theme }) => theme.spacing.unit}px;
     }
 `

@@ -14,16 +14,16 @@ const sessionStore = new MemoryStore({
 })
 
 // const sessionStore = new RedisStore({})
-export default domain => session({
+export default ({domain, secure = false }) => session({
   store: sessionStore,
   saveUninitialized: false,
   rolling: true,
   resave: true,
   cookie: {
-    secure: false,
+    secure,
     sameSite: false,
     maxAge: 500000,
-    domain: domain,
+    domain,
   },
   secret: cookie_secret,
 })

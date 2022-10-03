@@ -5,6 +5,7 @@ const path = require('path')
 module.exports = {
   dir: dev ? './src/controller_app' : path.resolve(__dirname, '../dist')/* , distDir: dev ? undefined : '../../dist/.next' */,
   dev,
+  webpack5: false,
   conf: {
 
     webpack: c => {

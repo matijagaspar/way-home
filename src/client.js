@@ -1,26 +1,7 @@
 import wsAgent from './utils/ws_agent'
-// TODO: replace request with got ormsth?
-import request from 'request'
-
-// import lowdb from 'lowdb'
+import { request } from 'undici'
 import { getAppLogger } from './utils/logger'
 import getPersistence from './utils/client_persistence'
-// import FileSync from 'lowdb/adapters/FileSync'
-// todo: file location
-// const adapter = new FileSync('./agent_settings.json', {
-//     defaultValue: {
-//         agent_name: '',
-//         controller_address: '',
-//         isSsl: false,
-//         permissions: {
-//             mode: 'session',
-//             groups: [
-//                 'admin',
-//             ],
-//         },
-
-//     },
-// })
 
 export default function client () {
   // TODO: check config exists
@@ -43,12 +24,13 @@ export default function client () {
     onControllerConnected: () => {
       agent.sendAgentInfo({ permissions, apps })
     },
-    onUnauthorized: () => {
+    onUnauthorized: async () => {
       agent.stop('Unauthorized, try authorize ')
 
       let authorized = false
       /* .stream().pipe(split()).on('data').on('end') */
-      request(`http://${controller_address}/authorize_agent?agent_name=${agent_name}`).on('data', d => {
+      const { body } = await request(`http${isSsl? 's' : ''}://${controller_address}/authorize_agent?agent_name=${agent_name}`, { timeout:180000 })
+      for await (const d of body){
         const message = JSON.parse(d.toString())
         if (message.type === 'pin') {
           logger.warn(`please authorize at: http://${controller_address}/verify_agent?agent_name=${agent_name}&pin=${message.pin}`)
@@ -59,15 +41,14 @@ export default function client () {
         } else if (message.type === 'error') {
           logger.error(message.message)
         }
-      })
-        .on('end', r => {
-          if (authorized) {
-            logger.info('authorized the agent')
-            agent.connect({ authorized })
-          } else {
-            throw new Error('failed to authorize')
-          }
-        })
+      }
+
+      if (authorized) {
+        logger.info('authorized the agent')
+        agent.connect({ authorized })
+      } else {
+        throw new Error('failed to authorize')
+      }
     },
   })
 }

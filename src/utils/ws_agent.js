@@ -41,12 +41,12 @@ export default function agent (user_opts = {}) {
 
     ws = new WebSocket(controller_url)
     const streams = []
-    ws.on('error', e => {
+    ws.on('error', async e => {
       if (e.message === 'Unexpected server response: 401') {
         logger.error(`Could not connect to ${controller_url}: Unauthorized `)
 
         if (agent_opts.onUnauthorized) {
-          agent_opts.onUnauthorized()
+          await agent_opts.onUnauthorized()
         }
       } else {
         logger.error(`Could not connect to ${controller_url}${e.code ? 'code: ' + e.code : ''}`)

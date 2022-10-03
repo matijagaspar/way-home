@@ -58,7 +58,7 @@ if (yargOpts.argv._.includes("server")) {
   if (yargOpts.argv.createServerConfig) {
 
     try{
-      generateInitialFile(configPath, clientConfigTemplate);
+      generateInitialFile(configPath, serverConfigTemplate);
       console.log(`Created server config: ${path.resolve(configPath) } `)
       process.exit(0)
     }catch(e){
