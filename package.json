@@ -64,7 +64,7 @@
     "ajv": "^8.0.1",
     "body-parser": "^1.18.3",
     "chalk": "^4.1.0",
-    "core-js": "^3.9.1",
+    "core-js": "^3.25.1",
     "express": "^4.16.3",
     "express-session": "^1.15.6",
     "fuse.js": "^6.4.6",
