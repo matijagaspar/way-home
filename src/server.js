@@ -8,7 +8,6 @@ import WebError, { webErrorHandler } from './utils/web/WebError'
 import { authorize } from './utils/web/permissions'
 import { getAppLogger } from './utils/logger'
 import express from 'express'
-// import session from './utils/web/session'
 import googleAuth from './utils/web/googleAuth'
 import authAgent from './utils/web/authAgent'
 import AgentRegistry, { RouteError } from './utils/AgentRegistry'
@@ -40,7 +39,7 @@ export default async function server (use_next) {
     res.redirect('/')
   })
 
-  web_app.use(sessionMiddleware(contoller_domain)) // cookie domain
+  web_app.use(sessionMiddleware({domain: contoller_domain, secure: isSSL}))
   // contoller_domain.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")
   // (.*?)\.?way-home\.si
   web_app.use(googleAuth({

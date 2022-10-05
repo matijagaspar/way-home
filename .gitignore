@@ -13,6 +13,8 @@ agent_settings.json
 agent_settings_dev.json
 
 .vagrant
+.dccache
+
 
 # test report
 test-report.xml

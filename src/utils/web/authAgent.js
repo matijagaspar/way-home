@@ -63,8 +63,12 @@ web_app.get('/authorize_agent', (req, res) => {
     res.write(JSON.stringify(obj) + '\n')
   }
   const { agent_name } = req.query
-  if (!agent_name) {
+  if (!agent_name && typeof agent_name !== 'string') {
     throw new WebError(400, 'No agent name')
+  }
+
+  if(!/^[a-zA-Z0-9\-\_]+$/.test(agent_name)){
+    throw new WebError(400, 'Bad agent name, only letters, numbers - and _ allowed')
   }
 
   if (agent_verifications[agent_name]) {
