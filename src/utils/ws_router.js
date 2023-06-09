@@ -191,6 +191,7 @@ export default function wsRouter (user_opts = {}) {
 
   const wss = new WebSocket.Server({ noServer: true })
 
+  // deepcode ignore HttpToHttps: This app should be behing a https proxy (ngix/apache), not meant to be front facing
   const http_server = http.createServer()
 
   http_server.on('connection', httpConnectHandler)

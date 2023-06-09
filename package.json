@@ -1,6 +1,6 @@
 {
   "name": "way-home",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "WS Reverse proxy with strong authentication.",
   "main": "dist/index.js",
   "repository": "https://github.com/matijagaspar/way-home",
@@ -15,7 +15,8 @@
     "lint": "eslint ./src --fix",
     "build": "node tools/rundev.js build",
     "run-server": "node dist/index.js server",
-    "run-client": "node dist/index.js client"
+    "run-client": "node dist/index.js client",
+    "run-all": "node dist/index.js server client mock"
   },
   "files": [
     "dist/*"

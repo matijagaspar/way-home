@@ -14,7 +14,7 @@ export default function googleAuth ({ clientID, clientSecret, callbackURL, verif
   })
 
   const auth_app = express()
-  auth_app.disable("x-powered-by")
+  auth_app.disable('x-powered-by')
 
   auth_app.use(passport.initialize())
   auth_app.use(passport.session())
