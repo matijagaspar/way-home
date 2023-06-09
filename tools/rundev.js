@@ -99,7 +99,9 @@ if (process.argv[2] === 'build') {
         path.resolve(distFolder, fileToCopy),
       )
     }
-  })().then(() => console.log('Build done'))
+  })().then(() => console.log('Build done')).catch(r => {
+    throw new Error('crashed', r)
+  })
 } else {
   WEBPACK_CONF.mode = 'development'
   const compiler = webpack(withDefineNodeEnv(WEBPACK_CONF, WEBPACK_CONF.mode))
