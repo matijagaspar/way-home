@@ -189,6 +189,22 @@ export default function wsRouter (user_opts = {}) {
     socket.on('data', collectHeader)
   }
 
+  // Tear down every client-facing socket tunnelled through an agent. Called
+  // when an agent entry is dropped (disconnect or duplicate-name replacement):
+  // without this, in-flight client sockets are orphaned -- leaking file
+  // descriptors, leaving clients hanging, and transitively pinning the old ws
+  // via their forwarding closures until each client independently times out.
+  const closeAgentStreams = entry => {
+    if (!entry || !entry.streams) return
+    Object.keys(entry.streams).forEach(port => {
+      const stream = entry.streams[port]
+      if (stream && stream.socket) {
+        stream.socket.destroy()
+      }
+      delete entry.streams[port]
+    })
+  }
+
   const wss = new WebSocket.Server({ noServer: true })
 
   // deepcode ignore HttpToHttps: This app should be behing a https proxy (ngix/apache), not meant to be front facing
@@ -236,7 +252,7 @@ export default function wsRouter (user_opts = {}) {
     logger.info(`agent '${agent_name}' connected`)
 
     if (agents[agent_name]) {
-      // end all streams?
+      closeAgentStreams(agents[agent_name])
       agents[agent_name].ws.close()
       delete agents[agent_name]
     }
@@ -279,6 +295,7 @@ export default function wsRouter (user_opts = {}) {
       // handler would close and delete the freshly reconnected agent, churning
       // the connection.
       if (agents[agent_name] && agents[agent_name].ws === ws) {
+        closeAgentStreams(agents[agent_name])
         delete agents[agent_name]
       }
     })
