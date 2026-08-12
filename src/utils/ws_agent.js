@@ -27,7 +27,13 @@ export default function agent (user_opts = {}) {
   const stopAgent = (reason) => {
     if (ws && ws.terminate) {
       logger.info(`Stopping agent${reason ? ` reason: ${reason}` : ''}`)
-      ws.removeAllListeners('close')
+      if (ws._heartbeat) {
+        clearInterval(ws._heartbeat)
+        ws._heartbeat = null
+      }
+      // removeAllListeners (not just 'close') so a terminated socket cannot
+      // fire a reconnect or keep processing late messages/pings.
+      ws.removeAllListeners()
       ws.terminate()
       ws = null
     }
@@ -39,9 +45,13 @@ export default function agent (user_opts = {}) {
     stopAgent('Reconnecting')
     logger.debug(`Connecting to controller ${controller_url}`)
 
-    ws = new WebSocket(controller_url)
+    // Bind every handler and the heartbeat to THIS socket instance. The outer
+    // `ws` gets reassigned on each reconnect, so closing over it would let a
+    // stale connection's handlers/heartbeat operate on a newer socket.
+    const socket = new WebSocket(controller_url)
+    ws = socket
     const streams = []
-    ws.on('error', async e => {
+    socket.on('error', async e => {
       if (e.message === 'Unexpected server response: 401') {
         logger.error(`Could not connect to ${controller_url}: Unauthorized `)
 
@@ -54,7 +64,16 @@ export default function agent (user_opts = {}) {
 
       // console.log(e.message)
     })
-    ws.on('close', code => {
+    socket.on('close', code => {
+      // Always tear down this socket's heartbeat so intervals never accumulate
+      // across reconnects.
+      if (socket._heartbeat) {
+        clearInterval(socket._heartbeat)
+        socket._heartbeat = null
+      }
+      if (ws === socket) {
+        ws = null
+      }
       logger.info(`Connection with controller closed (code=${code})`)
       // very basic recconect
       setTimeout(() => {
@@ -62,25 +81,27 @@ export default function agent (user_opts = {}) {
         connectAgent()
       }, agent_opts.reconnect_timeout)
     })
-    ws.on('open', function open () {
+    socket.on('open', function open () {
       logger.info('Connected to controller')
+      socket.isAlive = true
       if (agent_opts.onControllerConnected) {
         agent_opts.onControllerConnected()
       }
-      ws.on('ping', () => {
+      socket.on('ping', () => {
         // logger.debug(`ping ${ agent_opts.controller_address }`)
-        ws.isAlive = true
+        socket.isAlive = true
       })
-      const TOInterval = setInterval(() => {
-        if (ws.isAlive === false) {
+      socket._heartbeat = setInterval(() => {
+        if (socket.isAlive === false) {
           logger.warn('Detected dead socket, killing controller!')
-          clearInterval(TOInterval)
-          return ws.terminate()
+          clearInterval(socket._heartbeat)
+          socket._heartbeat = null
+          return socket.terminate()
         }
-        ws.isAlive = false
+        socket.isAlive = false
       }, agent_opts.ping_timeout)
 
-      ws.on('message', message => {
+      socket.on('message', message => {
         const received_data = message // Buffer.from(message) //<== for uws compatibility!
         const packet_type = Packet.getPacketId(received_data)
         switch (packet_type) {
@@ -95,15 +116,15 @@ export default function agent (user_opts = {}) {
             sock.on('connect', () => {
               streams[port] = sock
               const connect_packet = Packet.craftConnectPacket(port, app_id)
-              Packet.wsSend(ws, connect_packet)
+              Packet.wsSend(socket, connect_packet)
             })
             sock.on('error', e => {
               topicLogger.error('failed', e)
-              Packet.wsSend(ws, Packet.craftErrorPacket(port, e.code))
+              Packet.wsSend(socket, Packet.craftErrorPacket(port, e.code))
             })
             sock.on('close', e => {
               topicLogger.debug('socket closed by app, sending close command')
-              Packet.wsSend(ws, Packet.craftClosePacket(port))
+              Packet.wsSend(socket, Packet.craftClosePacket(port))
               sock.removeAllListeners()
               delete streams[port]
             })
@@ -112,7 +133,7 @@ export default function agent (user_opts = {}) {
             })
             sock.on('data', d => {
               topicLogger.trace('responding with data')
-              Packet.wsSend(ws, Packet.craftDataPacket(port, d))
+              Packet.wsSend(socket, Packet.craftDataPacket(port, d))
             })
 
             break
