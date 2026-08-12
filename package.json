@@ -7,13 +7,16 @@
   "homepage": "https://github.com/matijagaspar/way-home#README",
   "author": "Matija Gaspar <matija.gaspar@gmail.com>",
   "license": "MIT",
+  "engines": {
+    "node": ">=16"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "node tools/rundev.js",
-    "dev-client": "node tools/rundev.js client",
-    "dev-server": "node tools/rundev.js server",
+    "dev": "node tools/run-build.js",
+    "dev-client": "node tools/run-build.js client",
+    "dev-server": "node tools/run-build.js server",
     "lint": "eslint ./src --fix",
-    "build": "node tools/rundev.js build",
+    "build": "node tools/run-build.js build",
     "run-server": "node dist/index.js server",
     "run-client": "node dist/index.js client",
     "run-all": "node dist/index.js server client mock"
