@@ -273,8 +273,12 @@ export default function wsRouter (user_opts = {}) {
       logger.debug(`closing ws ${agent_name}`)
       clearInterval(TOInterval)
       clearInterval(pingInterval)
-      if (agents[agent_name]) {
-        agents[agent_name].ws.close()
+      // Only tear down the registry entry if it still points at THIS socket. A
+      // reconnect (or a duplicate agent_name) may have already replaced it with
+      // a newer socket; without this identity check, a stale socket's close
+      // handler would close and delete the freshly reconnected agent, churning
+      // the connection.
+      if (agents[agent_name] && agents[agent_name].ws === ws) {
         delete agents[agent_name]
       }
     })
