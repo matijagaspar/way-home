@@ -11,6 +11,10 @@ module.exports = {
         library: 'way-home',
         libraryTarget: 'commonjs2',
         filename: 'index.js',
+        // webpack 4 defaults to MD4, which OpenSSL 3 (Node >=17) no longer
+        // provides -> ERR_OSSL_EVP_UNSUPPORTED. sha256 lets this bundle build
+        // on modern Node without relying on --openssl-legacy-provider.
+        hashFunction: 'sha256',
     },
     devtool: 'inline-source-map',
     resolve: {
