@@ -87,7 +87,7 @@
     "react-flip-toolkit": "^7.0.13",
     "react-is": "^17.0.2",
     "secure-pin": "^1.0.14",
-    "styled-components": "^5.2.1",
+    "styled-components": "^5.3.7",
     "undici": "^5.11.0",
     "whatwg-url": "^6.5.0",
     "ws": "^8.9.0",
